@@ -1,0 +1,771 @@
+.dashboard {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.refresh-button {
+  padding: 8px 16px;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.refresh-button:hover {
+  background: var(--accent-hover);
+}
+
+/* Loading and Error States */
+.dashboard-loading,
+.dashboard-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--bg-tertiary);
+  border-top: 4px solid var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.dashboard-error {
+  color: var(--error-text);
+}
+
+.dashboard-error button {
+  padding: 8px 16px;
+  background: var(--error-border);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.metric-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid var(--border-primary);
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.metric-card.revenue .metric-icon {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.metric-card.expenses .metric-icon {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.metric-card.profit .metric-icon {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.metric-card.variation .metric-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.metric-content {
+  flex: 1;
+}
+
+.metric-content h3 {
+  font-size: 14px;
+  color: var(--text-tertiary);
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.metric-value.positive {
+  color: #059669;
+}
+
+.metric-value.negative {
+  color: #dc2626;
+}
+
+.metric-variation {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.metric-variation.positive {
+  color: #059669;
+}
+
+.metric-variation.negative {
+  color: #dc2626;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.dashboard-section {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-primary);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.section-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.add-button,
+.view-all-button {
+  padding: 6px 12px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.add-button:hover,
+.view-all-button:hover {
+  background: var(--bg-hover);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Notes and Reminders Section */
+.notes-reminders-section {
+  grid-column: span 2;
+}
+
+.notes-reminders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.notes-reminders-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notes-reminders-list::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+}
+
+.notes-reminders-list::-webkit-scrollbar-thumb {
+  background: var(--text-tertiary);
+  border-radius: 3px;
+}
+
+.notes-reminders-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+.note-item {
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border-left: 3px solid var(--border-primary);
+  transition: background 0.2s;
+  position: relative;
+}
+
+.note-item.pinned {
+  border-left-color: var(--warning-border);
+  background: var(--warning-bg);
+}
+
+.note-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.note-item:hover .note-actions {
+  opacity: 1;
+}
+
+.note-item h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.note-item p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.note-date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.reminder-item {
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border-left: 3px solid var(--border-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+}
+
+.reminder-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 4px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+.action-btn.delete:hover {
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+.action-btn svg.pinned {
+  color: #f59e0b;
+  fill: #f59e0b;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.reminder-item.priority-high {
+  border-left-color: #ef4444;
+  background: #fef2f2;
+}
+
+.reminder-item.priority-medium {
+  border-left-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.reminder-item.priority-low {
+  border-left-color: #10b981;
+  background: #f0fdf4;
+}
+
+.reminder-content h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.reminder-content p {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.reminder-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.priority-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.priority-badge.high {
+  background: #ef4444;
+  color: white;
+}
+
+.priority-badge.medium {
+  background: #f59e0b;
+  color: white;
+}
+
+.priority-badge.low {
+  background: #10b981;
+  color: white;
+}
+
+/* Attendants Section */
+.attendants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.attendant-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.attendant-rank {
+  width: 32px;
+  height: 32px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.attendant-info {
+  flex: 1;
+}
+
+.attendant-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.attendant-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.attendant-commission {
+  font-size: 16px;
+  font-weight: 600;
+  color: #059669;
+}
+
+/* Tables */
+.table-container {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead tr {
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.data-table th {
+  padding: 12px 8px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.data-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.data-table td {
+  padding: 12px 8px;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.amount {
+  font-weight: 600;
+}
+
+.amount.positive {
+  color: #059669;
+}
+
+.amount.negative {
+  color: #dc2626;
+}
+
+/* Empty States */
+.empty-message {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+  padding: 20px;
+}
+
+/* Dark Mode Support */
+body.dark-mode .dashboard-header h1 {
+  color: #e5e7eb;
+}
+
+body.dark-mode .refresh-button {
+  background: #4b5563;
+}
+
+body.dark-mode .refresh-button:hover {
+  background: #6b7280;
+}
+
+body.dark-mode .metric-card {
+  background: #1a1a1a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .metric-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .metric-card.revenue .metric-icon {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+}
+
+body.dark-mode .metric-card.expenses .metric-icon {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+body.dark-mode .metric-card.profit .metric-icon {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+body.dark-mode .metric-card.variation .metric-icon {
+  background: rgba(251, 146, 60, 0.2);
+  color: #fb923c;
+}
+
+body.dark-mode .metric-content h3 {
+  color: #9ca3af;
+}
+
+body.dark-mode .metric-value {
+  color: #e5e7eb;
+}
+
+body.dark-mode .metric-value.positive {
+  color: #4ade80;
+}
+
+body.dark-mode .metric-value.negative {
+  color: #f87171;
+}
+
+body.dark-mode .metric-variation.positive {
+  color: #4ade80;
+}
+
+body.dark-mode .metric-variation.negative {
+  color: #f87171;
+}
+
+body.dark-mode .dashboard-section {
+  background: #1a1a1a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .section-header {
+  border-bottom-color: #333333;
+}
+
+body.dark-mode .section-header h2 {
+  color: #e5e7eb;
+}
+
+body.dark-mode .add-button,
+body.dark-mode .view-all-button {
+  background: #2d2d2d;
+  color: #9ca3af;
+}
+
+body.dark-mode .add-button:hover,
+body.dark-mode .view-all-button:hover {
+  background: #374151;
+  color: #e5e7eb;
+}
+
+body.dark-mode .note-item {
+  background: #2d2d2d;
+  border-left-color: #4b5563;
+}
+
+body.dark-mode .note-item.pinned {
+  background: rgba(251, 191, 36, 0.1);
+  border-left-color: #fbbf24;
+}
+
+body.dark-mode .note-item h4 {
+  color: #e5e7eb;
+}
+
+body.dark-mode .note-item p {
+  color: #9ca3af;
+}
+
+body.dark-mode .note-date {
+  color: #6b7280;
+}
+
+body.dark-mode .reminder-item {
+  background: #2d2d2d;
+  border-left-color: #4b5563;
+}
+
+body.dark-mode .reminder-item.priority-high {
+  background: rgba(239, 68, 68, 0.1);
+  border-left-color: #ef4444;
+}
+
+body.dark-mode .reminder-item.priority-medium {
+  background: rgba(245, 158, 11, 0.1);
+  border-left-color: #f59e0b;
+}
+
+body.dark-mode .reminder-item.priority-low {
+  background: rgba(16, 185, 129, 0.1);
+  border-left-color: #10b981;
+}
+
+body.dark-mode .reminder-content h4 {
+  color: #e5e7eb;
+}
+
+body.dark-mode .reminder-content p {
+  color: #9ca3af;
+}
+
+body.dark-mode .reminder-date {
+  color: #6b7280;
+}
+
+body.dark-mode .action-btn {
+  color: #9ca3af;
+}
+
+body.dark-mode .action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+}
+
+body.dark-mode .action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+body.dark-mode .attendant-item {
+  background: #2d2d2d;
+}
+
+body.dark-mode .attendant-rank {
+  background: #4b5563;
+}
+
+body.dark-mode .attendant-info h4 {
+  color: #e5e7eb;
+}
+
+body.dark-mode .attendant-info p {
+  color: #9ca3af;
+}
+
+body.dark-mode .attendant-commission {
+  color: #4ade80;
+}
+
+body.dark-mode .data-table thead tr {
+  border-bottom-color: #4b5563;
+}
+
+body.dark-mode .data-table th {
+  color: #9ca3af;
+}
+
+body.dark-mode .data-table tbody tr {
+  border-bottom-color: #333333;
+}
+
+body.dark-mode .data-table tbody tr:hover {
+  background: #2d2d2d;
+}
+
+body.dark-mode .data-table td {
+  color: #e5e7eb;
+}
+
+body.dark-mode .amount.positive {
+  color: #4ade80;
+}
+
+body.dark-mode .amount.negative {
+  color: #f87171;
+}
+
+body.dark-mode .empty-message {
+  color: #6b7280;
+}
+
+body.dark-mode .notes-reminders-list::-webkit-scrollbar-track {
+  background: #2d2d2d;
+}
+
+body.dark-mode .notes-reminders-list::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+body.dark-mode .notes-reminders-list::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 15px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .data-table {
+    font-size: 12px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px 4px;
+  }
+}
