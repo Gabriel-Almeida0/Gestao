@@ -4,15 +4,32 @@ const { pool } = require('../config/database');
 // Get admin dashboard overview
 const getAdminDashboard = async (req, res) => {
   try {
-    // Get total users count
-    const [usersCount] = await pool.execute(
-      'SELECT COUNT(*) as total FROM users WHERE is_active = true'
-    );
-
-    // Get users by role
-    const [usersByRole] = await pool.execute(
-      'SELECT role, COUNT(*) as count FROM users WHERE is_active = true GROUP BY role'
-    );
+    // Get total users count - handle missing is_active column
+    let usersCount = [{ total: 0 }];
+    let usersByRole = [];
+    
+    try {
+      [usersCount] = await pool.execute(
+        'SELECT COUNT(*) as total FROM users WHERE is_active = true'
+      );
+      
+      [usersByRole] = await pool.execute(
+        'SELECT role, COUNT(*) as count FROM users WHERE is_active = true GROUP BY role'
+      );
+    } catch (err) {
+      // If is_active column doesn't exist, get all users
+      if (err.code === 'ER_BAD_FIELD_ERROR') {
+        [usersCount] = await pool.execute(
+          'SELECT COUNT(*) as total FROM users'
+        );
+        
+        [usersByRole] = await pool.execute(
+          'SELECT role, COUNT(*) as count FROM users GROUP BY role'
+        );
+      } else {
+        throw err;
+      }
+    }
 
     // Get total revenue across all tenants
     const [totalRevenue] = await pool.execute(
@@ -68,8 +85,22 @@ const getAdminDashboard = async (req, res) => {
 // Get all users
 const getUsers = async (req, res) => {
   try {
-    const [users] = await pool.execute(
-      `SELECT 
+    // Try to get users with is_active column, fallback if it doesn't exist
+    let query = `SELECT 
+        u.id,
+        u.name,
+        u.email,
+        u.role,
+        u.created_at,
+        u.updated_at,
+        t.name as tenant_name
+       FROM users u
+       LEFT JOIN tenants t ON u.tenant_id = t.id
+       ORDER BY u.created_at DESC`;
+    
+    try {
+      // First try with is_active column
+      const testQuery = `SELECT 
         u.id,
         u.name,
         u.email,
@@ -80,10 +111,21 @@ const getUsers = async (req, res) => {
         t.name as tenant_name
        FROM users u
        LEFT JOIN tenants t ON u.tenant_id = t.id
-       ORDER BY u.created_at DESC`
-    );
-
-    res.json(users);
+       ORDER BY u.created_at DESC`;
+      
+      const [users] = await pool.execute(testQuery);
+      res.json(users);
+    } catch (err) {
+      // If is_active doesn't exist, use query without it
+      if (err.code === 'ER_BAD_FIELD_ERROR') {
+        const [users] = await pool.execute(query);
+        // Add is_active as true for all users if column doesn't exist
+        const usersWithActive = users.map(user => ({ ...user, is_active: true }));
+        res.json(usersWithActive);
+      } else {
+        throw err;
+      }
+    }
   } catch (error) {
     console.error('Get users error:', error);
     res.status(500).json({ message: 'Error fetching users' });
@@ -108,11 +150,24 @@ const createUser = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const [result] = await pool.execute(
-      'INSERT INTO users (name, email, password, role, tenant_id, is_active) VALUES (?, ?, ?, ?, ?, true)',
-      [name, email, hashedPassword, role, tenant_id]
-    );
+    // Create user - check if is_active column exists
+    let result;
+    try {
+      [result] = await pool.execute(
+        'INSERT INTO users (name, email, password, role, tenant_id, is_active) VALUES (?, ?, ?, ?, ?, true)',
+        [name, email, hashedPassword, role, tenant_id]
+      );
+    } catch (err) {
+      // If is_active column doesn't exist, create without it
+      if (err.code === 'ER_BAD_FIELD_ERROR') {
+        [result] = await pool.execute(
+          'INSERT INTO users (name, email, password, role, tenant_id) VALUES (?, ?, ?, ?, ?)',
+          [name, email, hashedPassword, role, tenant_id]
+        );
+      } else {
+        throw err;
+      }
+    }
 
     // Log the action
     await pool.execute(
@@ -167,9 +222,17 @@ const updateUser = async (req, res) => {
       updateFields.push('role = ?');
       updateValues.push(role);
     }
+    // Only add is_active if column exists
     if (is_active !== undefined) {
-      updateFields.push('is_active = ?');
-      updateValues.push(is_active);
+      // Check if is_active column exists by trying a test query
+      try {
+        await pool.execute('SELECT is_active FROM users LIMIT 0');
+        updateFields.push('is_active = ?');
+        updateValues.push(is_active);
+      } catch (err) {
+        // Column doesn't exist, skip it
+        console.log('is_active column not found, skipping');
+      }
     }
     if (tenant_id !== undefined) {
       updateFields.push('tenant_id = ?');

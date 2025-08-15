@@ -242,7 +242,7 @@ const Settings = () => {
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    localStorage.setItem('darkMode', newDarkMode);
+    localStorage.setItem('darkMode', newDarkMode.toString());
     
     if (newDarkMode) {
       document.body.classList.add('dark-mode');

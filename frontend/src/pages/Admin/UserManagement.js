@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  BarChart3,
+  Edit2,
+  Trash2
+} from 'lucide-react';
 import { adminService } from '../../services/api';
 import './UserManagement.css';
 
@@ -203,21 +208,21 @@ const UserManagement = () => {
                       onClick={() => viewUserMetrics(user.id)}
                       title="Ver Métricas"
                     >
-                      📊
+                      <BarChart3 size={16} />
                     </button>
                     <button 
                       className="btn-action btn-edit"
                       onClick={() => openEditModal(user)}
                       title="Editar"
                     >
-                      ✏️
+                      <Edit2 size={16} />
                     </button>
                     <button 
                       className="btn-action btn-delete"
                       onClick={() => handleDeleteUser(user.id)}
                       title="Desativar"
                     >
-                      🗑️
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </td>

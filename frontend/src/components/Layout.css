@@ -183,6 +183,22 @@
   margin: 0;
 }
 
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tenant-name {
+  font-size: 14px;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 16px;
+  color: var(--accent-primary);
+  font-weight: 500;
+}
+
 .mobile-only {
   display: block;
 }
@@ -397,6 +413,12 @@ body.dark-mode .header {
 
 body.dark-mode .header-title h1 {
   color: #e5e7eb;
+}
+
+body.dark-mode .tenant-name {
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+  border-color: rgba(129, 140, 248, 0.3);
+  color: #a5b4fc;
 }
 
 body.dark-mode .user-menu-button {

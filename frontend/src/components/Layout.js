@@ -109,6 +109,11 @@ const Layout = () => {
 
           <div className="header-title">
             <h1>Sistema de Gestão</h1>
+            {user?.tenant_name && (
+              <span className="tenant-name">
+                {user.role === 'admin' ? '👑 Admin Global' : user.tenant_name}
+              </span>
+            )}
           </div>
 
           <div className="header-actions">

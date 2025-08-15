@@ -59,7 +59,7 @@ const login = async (req, res) => {
 };
 
 const register = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, companyName } = req.body;
 
   try {
     // Check if user exists
@@ -75,28 +75,56 @@ const register = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user with default tenant
-    const [result] = await pool.execute(
-      'INSERT INTO users (name, email, password, tenant_id) VALUES (?, ?, ?, 1)',
-      [name, email, hashedPassword]
-    );
+    // Start transaction for atomic operation
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
 
-    // Generate token
-    const token = jwt.sign(
-      { id: result.insertId, email, role: 'user' },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
-    );
+    try {
+      // Create a unique tenant for this user
+      // Use user's name or company name for the tenant
+      const tenantName = companyName || `${name}'s Workspace`;
+      const tenantSlug = email.split('@')[0] + '_' + Date.now(); // Unique slug
+      
+      const [tenantResult] = await connection.execute(
+        'INSERT INTO tenants (name, slug, active) VALUES (?, ?, true)',
+        [tenantName, tenantSlug]
+      );
+      
+      const tenantId = tenantResult.insertId;
 
-    res.status(201).json({
-      token,
-      user: {
-        id: result.insertId,
-        name,
-        email,
-        role: 'user'
-      }
-    });
+      // Create user with their own tenant
+      const [userResult] = await connection.execute(
+        'INSERT INTO users (name, email, password, tenant_id, role) VALUES (?, ?, ?, ?, ?)',
+        [name, email, hashedPassword, tenantId, 'user']
+      );
+
+      await connection.commit();
+
+      // Generate token with tenant_id
+      const token = jwt.sign(
+        { id: userResult.insertId, email, role: 'user', tenant_id: tenantId },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN }
+      );
+
+      res.status(201).json({
+        token,
+        user: {
+          id: userResult.insertId,
+          name,
+          email,
+          role: 'user',
+          tenant_id: tenantId,
+          tenant_name: tenantName
+        }
+      });
+
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
 
   } catch (error) {
     console.error('Register error:', error);
@@ -107,7 +135,10 @@ const register = async (req, res) => {
 const me = async (req, res) => {
   try {
     const [users] = await pool.execute(
-      'SELECT id, name, email, role, tenant_id FROM users WHERE id = ?',
+      `SELECT u.id, u.name, u.email, u.role, u.tenant_id, t.name as tenant_name 
+       FROM users u
+       LEFT JOIN tenants t ON u.tenant_id = t.id
+       WHERE u.id = ?`,
       [req.userId]
     );
 
