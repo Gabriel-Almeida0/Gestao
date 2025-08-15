@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState('note');
   const [editingItem, setEditingItem] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [dashboardData, setDashboardData] = useState({
     metrics: {
       totalRevenue: 0,
@@ -47,6 +48,19 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
+    
+    // Check for dark mode
+    const checkDarkMode = () => {
+      setIsDarkMode(document.body.classList.contains('dark-mode'));
+    };
+    
+    checkDarkMode();
+    
+    // Observer for dark mode changes
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
   }, []);
 
   const fetchDashboardData = async () => {
@@ -128,6 +142,16 @@ const Dashboard = () => {
         console.error('Error deleting reminder:', err);
       }
     }
+  };
+
+  const getNoteBackgroundColor = (note) => {
+    if (note.is_pinned) {
+      return isDarkMode ? 'rgba(251, 191, 36, 0.1)' : (note.color || '#fef3c7');
+    }
+    if (isDarkMode) {
+      return '#2d2d2d';
+    }
+    return note.color || '#f3f4f6';
   };
 
   const handleTogglePin = async (noteId) => {
@@ -258,7 +282,7 @@ const Dashboard = () => {
                   <div 
                     key={`note-${note.id}`} 
                     className={`note-item ${note.is_pinned ? 'pinned' : ''}`}
-                    style={{ backgroundColor: note.color || '#f3f4f6' }}
+                    style={{ backgroundColor: getNoteBackgroundColor(note) }}
                   >
                     <div className="note-actions">
                       <button 
