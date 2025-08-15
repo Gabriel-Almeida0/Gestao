@@ -10,6 +10,9 @@ import Attendants from './pages/Attendants/Attendants';
 import Tripeiros from './pages/Tripeiros/Tripeiros';
 import Reports from './pages/Reports/Reports';
 import Settings from './pages/Settings/Settings';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import UserManagement from './pages/Admin/UserManagement';
+import UserMetrics from './pages/Admin/UserMetrics';
 import './App.css';
 
 // Protected Route Component
@@ -44,6 +47,30 @@ const PublicRoute = ({ children }) => {
   return !isAuthenticated ? children : <Navigate to="/dashboard" replace />;
 };
 
+// Admin Route Component (only for admin users)
+const AdminRoute = ({ children }) => {
+  const { user, isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="app-loading">
+        <div className="spinner"></div>
+        <p>Carregando...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+};
+
 function App() {
   return (
     <Router>
@@ -75,6 +102,32 @@ function App() {
               <Route path="tripeiros" element={<Tripeiros />} />
               <Route path="reports" element={<Reports />} />
               <Route path="settings" element={<Settings />} />
+              
+              {/* Admin Routes */}
+              <Route 
+                path="admin/dashboard" 
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="admin/users" 
+                element={
+                  <AdminRoute>
+                    <UserManagement />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="admin/users/:id/metrics" 
+                element={
+                  <AdminRoute>
+                    <UserMetrics />
+                  </AdminRoute>
+                } 
+              />
             </Route>
 
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

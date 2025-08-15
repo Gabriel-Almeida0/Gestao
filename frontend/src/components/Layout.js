@@ -12,7 +12,8 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronDown
+  ChevronDown,
+  Shield
 } from 'lucide-react';
 import './Layout.css';
 
@@ -36,6 +37,10 @@ const Layout = () => {
     { path: '/reports', icon: FileText, label: 'Relatórios' },
     { path: '/settings', icon: Settings, label: 'Configurações' },
   ];
+
+  // Add admin menu item if user is admin
+  const adminMenuItem = user?.role === 'admin' ? 
+    { path: '/admin/dashboard', icon: Shield, label: 'Administração' } : null;
 
   return (
     <div className="layout">
@@ -65,6 +70,22 @@ const Layout = () => {
               <span>{item.label}</span>
             </NavLink>
           ))}
+          {adminMenuItem && (
+            <>
+              <div className="nav-divider"></div>
+              <NavLink
+                key={adminMenuItem.path}
+                to={adminMenuItem.path}
+                className={({ isActive }) => 
+                  `nav-item nav-item-admin ${isActive ? 'nav-item-active' : ''}`
+                }
+                onClick={() => setSidebarOpen(false)}
+              >
+                <adminMenuItem.icon size={20} />
+                <span>{adminMenuItem.label}</span>
+              </NavLink>
+            </>
+          )}
         </nav>
 
         <div className="sidebar-footer">

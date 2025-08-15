@@ -48,6 +48,17 @@ export const dashboardService = {
   getMetrics: (params) => api.get('/dashboard/metrics', { params }),
 };
 
+// Admin services
+export const adminService = {
+  getAdminDashboard: () => api.get('/admin/dashboard'),
+  getUsers: () => api.get('/admin/users'),
+  createUser: (data) => api.post('/admin/users', data),
+  updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
+  getUserMetrics: (id, params) => api.get(`/admin/users/${id}/metrics`, { params }),
+  getTenants: () => api.get('/admin/tenants'),
+};
+
 // Payment services
 export const paymentService = {
   getAll: (params) => api.get('/payments', { params }),

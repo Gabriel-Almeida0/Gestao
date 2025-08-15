@@ -92,6 +92,24 @@
   color: var(--text-primary);
 }
 
+.nav-divider {
+  height: 1px;
+  background: var(--border-primary);
+  margin: 10px 20px;
+}
+
+.nav-item-admin {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.nav-item-admin:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.nav-item-admin.nav-item-active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
 .nav-item-active {
   background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
   color: white;

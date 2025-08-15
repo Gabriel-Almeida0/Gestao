@@ -13,6 +13,7 @@ const noteRoutes = require('./routes/note.routes');
 const reminderRoutes = require('./routes/reminder.routes');
 const reportRoutes = require('./routes/report.routes');
 const settingsRoutes = require('./routes/settings.routes');
+const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3333;
@@ -36,6 +37,7 @@ app.use('/api/notes', noteRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
